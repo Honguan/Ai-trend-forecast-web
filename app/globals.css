@@ -48,7 +48,7 @@ p {
 
 .form {
   display: grid;
-  grid-template-columns: 130px minmax(160px, 1fr) 120px 120px auto;
+  grid-template-columns: minmax(220px, 1.5fr) 130px minmax(160px, 1fr) 120px 120px auto;
   gap: 10px;
   align-items: end;
   padding: 16px;

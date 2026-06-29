@@ -1,7 +1,14 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { AnalysisResult, AssetType, Candle, ForecastPoint } from "../lib/types";
+
+type Instrument = {
+  assetType: AssetType;
+  symbol: string;
+  name: string;
+  group: string;
+};
 
 const ranges = [
   ["1d", "1日"],
@@ -22,6 +29,8 @@ const intervals: Record<string, string> = {
 export default function HomePage() {
   const [assetType, setAssetType] = useState<AssetType>("stock");
   const [symbol, setSymbol] = useState("AAPL");
+  const [selectedInstrument, setSelectedInstrument] = useState("AAPL");
+  const [instruments, setInstruments] = useState<Instrument[]>([]);
   const [range, setRange] = useState("1mo");
   const [candles, setCandles] = useState<Candle[]>([]);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
@@ -30,6 +39,21 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
 
   const chart = useMemo(() => buildChart(candles, analysis?.forecast ?? []), [candles, analysis]);
+
+  useEffect(() => {
+    fetch("/api/market/instruments")
+      .then((response) => response.json())
+      .then((data) => setInstruments(data.instruments ?? []))
+      .catch(() => setInstruments([]));
+  }, []);
+
+  function chooseInstrument(value: string) {
+    setSelectedInstrument(value);
+    const instrument = instruments.find((item) => item.symbol === value);
+    if (!instrument) return;
+    setAssetType(instrument.assetType);
+    setSymbol(instrument.symbol);
+  }
 
   async function analyze(event: FormEvent) {
     event.preventDefault();
@@ -83,17 +107,31 @@ export default function HomePage() {
       <div className="topbar">
         <div>
           <h1>AI 走勢分析</h1>
-          <p className="subtitle">本地部署，支援美股、加密貨幣與貴金屬；僅供研究，不構成投資建議。</p>
+          <p className="subtitle">本地部署，支援美股、ETF、指數、外匯、加密貨幣與商品；僅供研究，不構成投資建議。</p>
         </div>
       </div>
 
       <form className="form" onSubmit={analyze}>
         <label>
+          熱門商品
+          <select value={selectedInstrument} onChange={(event) => chooseInstrument(event.target.value)}>
+            {instruments.map((instrument) => (
+              <option key={instrument.symbol} value={instrument.symbol}>
+                {instrument.group} - {instrument.symbol} {instrument.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
           類型
           <select value={assetType} onChange={(event) => setAssetType(event.target.value as AssetType)}>
             <option value="stock">美股</option>
+            <option value="etf">ETF</option>
+            <option value="index">指數</option>
+            <option value="forex">外匯</option>
             <option value="crypto">加密貨幣</option>
             <option value="metal">貴金屬</option>
+            <option value="commodity">能源商品</option>
           </select>
         </label>
         <label>

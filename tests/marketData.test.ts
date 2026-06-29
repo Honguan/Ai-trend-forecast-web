@@ -4,8 +4,12 @@ import { fetchMarketHistory, normalizeTwelveDataCandles, resolveTwelveDataSymbol
 
 test("resolves symbols for supported assets", () => {
   assert.equal(resolveTwelveDataSymbol("stock", "aapl"), "AAPL");
+  assert.equal(resolveTwelveDataSymbol("etf", "spy"), "SPY");
+  assert.equal(resolveTwelveDataSymbol("index", "spx"), "SPX");
+  assert.equal(resolveTwelveDataSymbol("forex", "eur/usd"), "EUR/USD");
   assert.equal(resolveTwelveDataSymbol("crypto", "btc/usd"), "BTC/USD");
   assert.equal(resolveTwelveDataSymbol("metal", "xau/usd"), "XAU/USD");
+  assert.equal(resolveTwelveDataSymbol("commodity", "wti/usd"), "WTI/USD");
 });
 
 test("normalizes twelve data candles from oldest to newest", () => {

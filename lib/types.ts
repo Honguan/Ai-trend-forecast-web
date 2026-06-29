@@ -1,4 +1,4 @@
-export type AssetType = "stock" | "crypto" | "metal";
+export type AssetType = "stock" | "etf" | "index" | "forex" | "crypto" | "metal" | "commodity";
 
 export type Candle = {
   time: string;

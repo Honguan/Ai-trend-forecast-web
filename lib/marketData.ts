@@ -11,7 +11,7 @@ type TwelveDataCandle = {
 
 export function resolveTwelveDataSymbol(assetType: AssetType, symbol: string): string {
   const normalized = symbol.trim().toUpperCase();
-  if (assetType === "stock") return normalized.replace(/[^A-Z.-]/g, "");
+  if (assetType === "stock" || assetType === "etf" || assetType === "index") return normalized.replace(/[^A-Z.-]/g, "");
   return normalized.includes("/") ? normalized : normalized.replace("-", "/");
 }
 
